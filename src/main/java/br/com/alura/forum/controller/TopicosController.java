@@ -10,6 +10,7 @@ import br.com.alura.forum.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +39,7 @@ public class TopicosController {
         return TopicoDto.converter(nomeCurso != null && !nomeCurso.isEmpty() ? topicoRepository.findByCursoNome(nomeCurso) : topicoRepository.findAll());
     }
 
+    @Transactional
     @PostMapping()
     public ResponseEntity<TopicoDto> cadastrar(@RequestBody @Valid TopicoForm topicoForm, UriComponentsBuilder uriComponentsBuilder) {
         Topico topico = topicoRepository.save(topicoForm.converter(cursoRepository));
@@ -55,6 +57,14 @@ public class TopicosController {
     @PutMapping("/{id}")
     public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
         return ResponseEntity.ok(new TopicoDto(form.atualizar(id, topicoRepository)));
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remover(@PathVariable Long id) {
+        topicoRepository.deleteById(id);
+
+        return ResponseEntity.ok().build();
     }
 
 }
