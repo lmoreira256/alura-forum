@@ -23,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/topicos")
@@ -49,14 +50,18 @@ public class TopicosController {
     }
 
     @GetMapping("/{id}")
-    public DetalhesTopicoDto detalhar(@PathVariable Long id) {
-        return new DetalhesTopicoDto(topicoRepository.getById(id));
+    public ResponseEntity<DetalhesTopicoDto> detalhar(@PathVariable Long id) {
+        Optional<Topico> topicoOptional = topicoRepository.findById(id);
+
+        return topicoOptional.map(topico -> ResponseEntity.ok().body(new DetalhesTopicoDto(topico))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Transactional
     @PutMapping("/{id}")
     public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
-        return ResponseEntity.ok(new TopicoDto(form.atualizar(id, topicoRepository)));
+        Optional<Topico> topicoOptional = topicoRepository.findById(id);
+
+        return topicoOptional.map(topico -> ResponseEntity.ok(new TopicoDto(form.atualizar(id, topicoRepository)))).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @Transactional
