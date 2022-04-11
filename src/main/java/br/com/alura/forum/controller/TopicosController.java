@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,8 +40,8 @@ public class TopicosController {
     private CursoRepository cursoRepository;
 
     @GetMapping()
-    public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso, @RequestParam int pagina, @RequestParam int qtd) {
-        Pageable pageable = PageRequest.of(pagina, qtd);
+    public Page<TopicoDto> lista(@RequestParam(required = false) String nomeCurso, @RequestParam int pagina, @RequestParam int qtd, @RequestParam String ordenacao) {
+        Pageable pageable = PageRequest.of(pagina, qtd, Sort.Direction.DESC, ordenacao);
 
         return TopicoDto.converter(nomeCurso == null ? topicoRepository.findAll(pageable) : topicoRepository.findByCursoNome(nomeCurso, pageable));
     }
